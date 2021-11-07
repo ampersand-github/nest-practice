@@ -1,49 +1,22 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaService } from '../src/infrastructure/prisma/prisma.service';
+import { userSeed1, userSeed2 } from './seed-data/user';
 
-const prisma = new PrismaClient();
-
-const main = async () => {
+export const registerSeed = async (prisma: PrismaService) => {
   await prisma.user.upsert({
-    where: { email: 'alice@prisma.io' },
+    where: { email: userSeed1.email },
     update: {},
-    create: {
-      email: 'alice@prisma.io',
-      name: 'Alice',
-      posts: {
-        create: {
-          title: 'Check out Prisma with Next.js',
-          content: 'https://www.prisma.io/nextjs',
-          published: true,
-        },
-      },
-    },
+    create: userSeed1,
   });
-
   await prisma.user.upsert({
-    where: { email: 'bob@prisma.io' },
+    where: { email: userSeed2.email },
     update: {},
-    create: {
-      email: 'bob@prisma.io',
-      name: 'Bob',
-      posts: {
-        create: [
-          {
-            title: 'Follow Prisma on Twitter',
-            content: 'https://twitter.com/prisma',
-            published: true,
-          },
-          {
-            title: 'Follow Nexus on Twitter',
-            content: 'https://twitter.com/nexusgql',
-            published: true,
-          },
-        ],
-      },
-    },
+    create: userSeed2,
   });
 };
 
-main()
+const prisma = new PrismaService();
+
+registerSeed(prisma)
   .catch((e) => {
     console.error(e);
     process.exit(1);
