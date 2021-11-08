@@ -1,7 +1,8 @@
-import { IPostProps, Post } from '../post';
+import { Post } from '../post';
 import { PostId } from '../Post-id';
+import { IPostDomain } from '../__interface__/post-domain-interface';
 
-const postProps: IPostProps = {
+const postProps: IPostDomain = {
   title: 'タイトル',
   content: 'コンテンツ',
   published: true,

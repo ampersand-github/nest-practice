@@ -1,6 +1,7 @@
 import { Post } from 'src/domain/post/post';
-import { IUserProps, User } from '../user';
+import { User } from '../user';
 import { UserId } from '../user-id';
+import { IUserDomain } from '../__interface__/user-domain-interface';
 
 const post1 = Post.create({
   title: 'タイトル',
@@ -12,7 +13,7 @@ const post2 = Post.create({
   content: 'コンテンツ2',
   published: true,
 });
-const UserProps: IUserProps = {
+const UserProps: IUserDomain = {
   name: '名前',
   email: 'aaa@example.com',
   posts: [post1, post2],

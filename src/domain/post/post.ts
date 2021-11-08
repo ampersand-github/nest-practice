@@ -1,18 +1,13 @@
 import { PostId } from './Post-id';
 import { AggregateRoot } from '../__shared__/aggregate-root';
+import { IPostDomain } from './__interface__/post-domain-interface';
 
-export interface IPostProps {
-  title: string;
-  content: string;
-  published: boolean;
-}
-
-export class Post extends AggregateRoot<IPostProps, PostId> {
-  public static create(props: IPostProps): Post {
+export class Post extends AggregateRoot<IPostDomain, PostId> {
+  public static create(props: IPostDomain): Post {
     return new Post(props, PostId.create());
   }
 
-  public static restore(props: IPostProps, id: PostId): Post {
+  public static restore(props: IPostDomain, id: PostId): Post {
     return new Post(props, id);
   }
   public get title(): string {

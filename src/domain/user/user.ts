@@ -1,19 +1,14 @@
 import { UserId } from './user-id';
 import { Post } from '../post/post';
 import { AggregateRoot } from '../__shared__/aggregate-root';
+import { IUserDomain } from './__interface__/user-domain-interface';
 
-export interface IUserProps {
-  name: string;
-  email: string;
-  posts?: Post[];
-}
-
-export class User extends AggregateRoot<IUserProps, UserId> {
-  public static create(props: IUserProps): User {
+export class User extends AggregateRoot<IUserDomain, UserId> {
+  public static create(props: IUserDomain): User {
     return new User(props, UserId.create());
   }
 
-  public static restore(props: IUserProps, id: UserId): User {
+  public static restore(props: IUserDomain, id: UserId): User {
     return new User(props, id);
   }
   public get name(): string {
