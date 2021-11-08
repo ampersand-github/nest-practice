@@ -1,10 +1,11 @@
 import { UserId } from 'src/domain/user/user-id';
 import { PrismaService } from 'src/infrastructure/prisma/prisma.service';
 import { PrismaUserAggregate, UserRepository } from '../user-repository';
-import { IUserProps, User } from 'src/domain/user/user';
+import { User } from 'src/domain/user/user';
 import { truncateAllTable } from './__shared__/truncate-all-table';
 import { registerSeed } from 'prisma/seed';
 import { userSeed1 } from 'prisma/seed-data/user';
+import { IUserDomain } from '../../../domain/user/__interface__/user-domain-interface';
 
 const userDummyData: PrismaUserAggregate = {
   id: '40bfaf83-c306-4b6e-bda4-a74f2f8b9002',
@@ -92,7 +93,7 @@ describe('UserRepository', () => {
       // userSeed1の名前を変更して更新
       const updatedName = 'update';
       const updateId: UserId = UserId.restore(userSeed1.id);
-      const updateProps: IUserProps = {
+      const updateProps: IUserDomain = {
         name: updatedName,
         email: userSeed1.email,
       };
@@ -110,7 +111,7 @@ describe('UserRepository', () => {
       // userSeed1の名前を変更して更新
       const updatedName = 'update';
       const updateId: UserId = UserId.restore('aaa');
-      const updateProps: IUserProps = {
+      const updateProps: IUserDomain = {
         name: updatedName,
         email: userSeed1.email,
       };
