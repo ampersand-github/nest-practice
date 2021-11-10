@@ -4,22 +4,9 @@ services:
     container_name: nest-practice
     image: postgres:14.0
     ports:
-      - '5413:5432' # portが被らないように5403:5432 -> '5413:5432'に変更
+      - '5423:5432' # portが被らないように5403:5432 -> '5423:5432'に変更
     volumes:
       - nest-practice-db-store:/var/lib/postgresql/data
-    environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: prisma2021
-      POSTGRES_DB: prisma
-      POSTGRES_INITDB_ARGS: '--encoding=UTF-8'
-      TZ: 'Asia/Tokyo'
-  nest-practice-test-db:
-    container_name: nest-practice-test-db
-    image: postgres:14.0
-    ports:
-      - '5412:5432' # portが被らないように5403:5432 -> '5412:5432'に変更
-    volumes:
-      - nest-practice-test-db-store:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: prisma2021
@@ -29,6 +16,4 @@ services:
 
 volumes:
   nest-practice-db-store:
-    driver: local
-  nest-practice-test-db-store:
     driver: local

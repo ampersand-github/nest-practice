@@ -9,3 +9,209 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id    String @id
+  email String @unique
+  name  String?
+  posts Post[] // User1つに対して複数のpostがつく
+}
+
+model Post {
+  id        String @id
+  title     String
+  content   String?
+  published Boolean? @default(false)
+  authorId  String? // User1つに対して複数のpostがつく
+  author    User?    @relation(fields: [authorId], references: [id]) // User1つに対して複数のpostがつく
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// many-to-many relations
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// https://www.prisma.io/docs/concepts/components/prisma-schema/relations/many-to-many-relations/
+model Pattern1Post {
+  id        String @id
+  text      String
+  category  CategoriesOnPosts[]
+}
+
+model Pattern1Category {
+  id        String @id
+  tag       String
+  post      CategoriesOnPosts[]
+}
+
+
+model CategoriesOnPosts {
+  postId     String // relation scalar field (used in the `@relation` attribute above)
+  categoryId String // relation scalar field (used in the `@relation` attribute above)
+  post       Pattern1Post     @relation(fields: [postId], references: [id])
+  category   Pattern1Category @relation(fields: [categoryId], references: [id])
+  @@id([postId, categoryId])
+}
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+//
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+model Comment {
+  id        String @id
+  text      String
+  novel     CommentToNovel[]
+  manga     CommentToManga[]
+}
+
+model Novel {
+  id        String @id
+  title     String
+  comment   CommentToNovel[]
+}
+
+model Manga {
+  id        String @id
+  title     String
+  comment   CommentToManga[]
+}
+
+
+model CommentToNovel {
+  novelId   String // relation scalar field (used in the `@relation` attribute above)
+  commentId String // relation scalar field (used in the `@relation` attribute above)
+  novel     Novel     @relation(fields: [novelId], references: [id])
+  comment   Comment @relation(fields: [commentId], references: [id])
+  @@id([novelId, commentId])
+}
+
+model CommentToManga {
+  commentId String // relation scalar field (used in the `@relation` attribute above)
+  mangaId   String // relation scalar field (used in the `@relation` attribute above)
+  manga     Manga     @relation(fields: [mangaId], references: [id])
+  comment   Comment @relation(fields: [commentId], references: [id])
+  @@id([mangaId, commentId])
+}
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// 閉包テーブル
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// https://github.com/prisma/prisma/issues/1483
+model Message {
+    id        String @id
+    text      String
+    ancestor  MessageTreePath[]  @relation("ancestor")
+    descendant MessageTreePath[]  @relation("descendant")
+}
+
+model MessageTreePath {
+    ancestorId      String
+    descendantId    String
+    ancestor        Message?  @relation("ancestor", fields: [ancestorId], references: [id])
+    descendant      Message?  @relation("descendant", fields: [descendantId], references: [id])
+
+    @@id([ancestorId,descendantId])
+}
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// 定数テーブルの利用
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+model User2 {
+    id          String @id
+    name        String
+    status      String // このステータスがUserStatus.statusの値しか入れられない。
+    status_     User2Status?  @relation(fields: [status], references: [status])
+}
+
+model User2Status {
+    status String @id
+    customer User2[] // 退会済み,参加中など複数のステータス
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// アンチパターン4
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+model A4_CustomerStatus {
+    status  String  @id
+    matter   A4_Matter[]
+}
+
+model A4_Matter {
+    id              String  @id
+    status          String
+    personalInfoId  String
+    recentTelephoneAtId   String // 最新1件が入る。履歴ごと持ちたかったらmany-to-manyにする
+    recentMeetAtId  String
+    status_         A4_CustomerStatus?  @relation(fields: [status], references: [status])
+    personalInfo    A4_PersonalInfo?  @relation(fields: [personalInfoId], references: [id])
+    recentTelephoneAt     A4_TelephoneAt?  @relation(fields: [recentTelephoneAtId], references: [id])
+    recentMeetAt     A4_MeetAt?  @relation(fields: [recentMeetAtId], references: [id])
+}
+
+model A4_PersonalInfo {
+    id          String  @id
+    firstName   String
+    lastName    String
+    matter A4_Matter[]
+}
+
+model A4_TelephoneAt {
+    id  String  @id
+    telephoneAt String
+    comment     String
+    matter A4_Matter[]
+}
+
+model A4_MeetAt {
+    id  String  @id
+    A4_MeetAt String
+    comment     String
+    matter A4_Matter[]
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// モデリング1
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+model M1_Customer {
+    id          String  @id
+    name        String
+    telephone   Int
+    order       M1_Order[]
+}
+
+model M1_Order {
+    id          String  @id
+    orderId     String?
+    order       M1_Customer?    @relation(fields: [orderId], references: [id])
+    orderDtail  M1_OrderDtail[]
+}
+
+model M1_OrderDtail {
+    id              String  @id
+    withoutWasabi   Boolean
+    count           Int
+    orderId         String?
+    order           M1_Order?    @relation(fields: [orderId], references: [id])
+    sushiId         String?
+    sushi           M1_Sushi?    @relation(fields: [sushiId], references: [id])
+}
+
+model M1_Sushi {
+    id          String  @id
+    name        String
+    price       Int
+    orderDtail  M1_OrderDtail[]
+    sushiSetToSushi  M1_SushiSetToSushi[]
+}
+
+model M1_SushiSetToSushi {
+    id          String  @id
+    count       Int
+    sushiId     String?
+    sushi       M1_Sushi?    @relation(fields: [sushiId], references: [id])
+    sushiSetId  String?
+    sushiSet    M1_SushiSet?    @relation(fields: [sushiSetId], references: [id])
+}
+
+model M1_SushiSet {
+    id          String  @id
+    name        String
+    price       Int
+    sushiSetToSushi  M1_SushiSetToSushi[]
+}
