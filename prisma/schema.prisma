@@ -177,8 +177,8 @@ model M1_Customer {
 
 model M1_Order {
     id          String  @id
-    orderId     String?
-    order       M1_Customer?    @relation(fields: [orderId], references: [id])
+    orderId     String
+    order       M1_Customer    @relation(fields: [orderId], references: [id])
     orderDtail  M1_OrderDtail[]
 }
 
@@ -186,10 +186,10 @@ model M1_OrderDtail {
     id              String  @id
     withoutWasabi   Boolean
     count           Int
-    orderId         String?
-    order           M1_Order?    @relation(fields: [orderId], references: [id])
-    sushiId         String?
-    sushi           M1_Sushi?    @relation(fields: [sushiId], references: [id])
+    orderId         String
+    order           M1_Order    @relation(fields: [orderId], references: [id])
+    sushiId         String
+    sushi           M1_Sushi    @relation(fields: [sushiId], references: [id])
 }
 
 model M1_Sushi {
@@ -203,10 +203,10 @@ model M1_Sushi {
 model M1_SushiSetToSushi {
     id          String  @id
     count       Int
-    sushiId     String?
-    sushi       M1_Sushi?    @relation(fields: [sushiId], references: [id])
-    sushiSetId  String?
-    sushiSet    M1_SushiSet?    @relation(fields: [sushiSetId], references: [id])
+    sushiId     String
+    sushi       M1_Sushi    @relation(fields: [sushiId], references: [id])
+    sushiSetId  String
+    sushiSet    M1_SushiSet    @relation(fields: [sushiSetId], references: [id])
 }
 
 model M1_SushiSet {
